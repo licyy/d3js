@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+<!-- 导入最新的d3.js -->
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+</head>
+<body>
+    <div id="app">
+        <svg>
+
+
+
+        </svg>
+    </div>
+
+<script>
+//定义基本数据
+//设置边距
+let margin={
+    top:60,
+    bottom:60,
+    left:60,
+    right:60
+}
+//设置假数据
+let dataset=[250,210,170,130,90]
+
+//获取svg标签,在里面绘制图形
+var svg=d3.select("#app").select("svg")
+//定义一个用来装图标的分组,并设置他的位置
+var g=svg.append("g").attr("transform",`translate(${margin.top},${margin.left})`)
+//画出矩形
+var rectHeight=30 //定义柱体的高度
+g.selectAll("rect").data("dataset")//绑定假数据,获得update部分
+    .enter().append("rect")//原g标签中没有rect,所以创建enter部分rect
+    // 设置属性将数据可视化
+    //设置左上角的坐标
+    .attr("x",20)           //设置x轴距离
+    .attr("y",(d,i)=>{  // 设置y轴距离
+        return i*rectHeight+5
+    })
+    // 设置宽度
+    .attr("width",(d,i)=>{
+        return d
+    })
+    //设置高度
+    .attr("height",rectHeight)
+    //设置柱体颜色
+    .attr("fill","pink")
+
+
+    
+
+
+
+</script>
+
+
+</body>
+</html>

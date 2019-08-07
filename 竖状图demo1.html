@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>竖状图</title>
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+
+</head>
+
+<body>
+    <!-- 做一个竖状图 -->
+    <div id="svg">
+    </div>
+
+
+
+    <script>
+        //导入d3.js之后有一个d3对象
+
+        // d3中获取元素:select()选择所有指定元素的第一个 | selectAll()选择指定元素的全部
+
+        // d3中绑定数据:datum()绑定一个数据到选择集 | data()绑定数组到选择集
+
+
+
+
+        // 定义数据
+        const dataset = [50, 43, 120, 89, 99, 167, 142]
+
+        //创建svg画布
+        //画布高度
+        const height = 400;
+        //画布宽度
+        const width = 400;
+        //通过d3获取到svg这个div并且添加一个svg标签,设置属性
+        const svg = d3.select("#svg").append("svg").attr("height", height).attr("width", width)
+
+        //创建竖状图
+        //设置每个柱体的间距
+        const padding = {
+            top: 20,
+            left: 20,
+            right: 20,
+            bottom: 20,
+        }
+        //设置柱体步进(每一个数据多少px)
+        const rectStep = 35;
+        //设置柱体宽度
+        const rectWidth = 30;
+        //获取所有svg中的rect元素---将数据绑定到d3的选择集上,获取updata部分---获得enter部分(在原本的div中没有rect,所以全部都是enter部分)---在enter部分创建rect---给enter部分的rect设置属性
+        svg.selectAll("rect").data(dataset).enter().append("rect").attr("fill", "red")
+            //x|y 是左上角的位置
+            .attr('x', (d, i) => padding.left + i * rectStep)
+            .attr('y', (d, i) => height - padding.bottom - d)
+            .attr('width', rectWidth)
+            .attr('height', d => d)
+
+        const text = svg.selectAll("text").data(dataset).enter().append("text").attr("fill", "#fff")
+            .attr("font-size", "14px").attr("text-anchor", "middle")
+            .attr('x', (d, i) => padding.left + i * rectStep)
+            .attr('y', (d, i) => height - padding.bottom - d)
+            .text(d => d)
+            .attr("dx", rectWidth / 2)
+            .attr("dy", "1em")
+    </script>
+</body>
+
+</html>

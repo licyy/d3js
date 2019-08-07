@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" version="1.1">
+<!--rect 方块   cricle 圆 ellipse 椭圆 line 线 polygon 封闭多边形 polyline 未封闭的多边形 text 可被选中的文字-->
+<!--width|height 宽高-->
+<!--x|y 坐标-->
+<!--fill 填充色 stroke:边框颜色 stoke-width:边框宽度  x|y 是左上角的坐标-->
+    <rect width="100" height="100" x="20" y="20" style="fill:red;stroke:blue;stoke-width:4"/>
+<!--rx|ry 弧度-->
+    <rect width="100" height="100" x="120" y="120" rx="20" ry="10" style="fill:blue;stroke:red;stoke-width:4"/>
+<!--cx|cy 圆心的坐标 r 半径-->
+    <circle cx="100" cy="280" r="80" style="fill:green"/>
+<!--rx|ry x轴半径和y轴半径-->
+    <ellipse cx="330" cy="280" rx="60" ry="80" style="fill:yellow"/>
+<!--x1|y1 坐标1 x2|y2坐标2-->
+    <line x1="0" x2="600" y1="0" y2="360" style="stroke:#000;stroke-width:4"/>
+<!-- points 记录每个点的坐标 连起来 -->
+    <polygon points="100,20 20,90 20,200" style="fill:orange;stroke:red;stoke-width:4"/>
+<!-- 未封闭的多边形 -->
+    <polyline points="200,30 30,90 30,200" style="fill:pink;stroke:red;stoke-width:4"/>
+<!-- x|y 文字起始坐标 textLength 文字总长度  tspan 控制独立样式-->
+    <text x="400"  y="450" style="fill:purple" textLength="200">
+        好好学习, <tspan style="fill:red">天天</tspan>向上
+    </text>
+</svg>
