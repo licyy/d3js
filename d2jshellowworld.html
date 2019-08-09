@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+     <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+
+</head>
+<body>
+    <div id="app">  
+        <svg></svg>
+
+
+    </div>
+
+
+    <script>
+        let data="nihao"
+        let app=d3.select("#app").style("background-color","rebeccapurple")
+        let svg=app.select("svg").style("background-color","yellow")
+        let text=svg.append("text").attr("x",200).attr("y",200).attr("textLength","100").style("fill:purple").text("nihao")
+    </script>
+</body>
+</html>

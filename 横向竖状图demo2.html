@@ -27,28 +27,29 @@ let margin={
     right:60
 }
 //设置假数据
-let dataset=[250,210,170,130,90]
+let dataset=[250,300,400,200,180]
 
 //获取svg标签,在里面绘制图形
-var svg=d3.select("#app").select("svg")
+var svg=d3.select("#app").select("svg").attr("width",600).attr("height",600)
 //定义一个用来装图标的分组,并设置他的位置
 var g=svg.append("g").attr("transform",`translate(${margin.top},${margin.left})`)
+console.log(`translate(${margin.top},${margin.left})`);
+
 //画出矩形
 var rectHeight=30 //定义柱体的高度
-g.selectAll("rect").data("dataset")//绑定假数据,获得update部分
+g.selectAll("rect").data(dataset)//绑定假数据,获得update部分
     .enter().append("rect")//原g标签中没有rect,所以创建enter部分rect
     // 设置属性将数据可视化
     //设置左上角的坐标
     .attr("x",20)           //设置x轴距离
     .attr("y",(d,i)=>{  // 设置y轴距离
-        return i*rectHeight+5
+        return i*rectHeight
     })
     // 设置宽度
-    .attr("width",(d,i)=>{
-        return d
-    })
+    .attr("width",d=>d)
+    .text(d=>d)
     //设置高度
-    .attr("height",rectHeight)
+    .attr("height",rectHeight-5)
     //设置柱体颜色
     .attr("fill","pink")
 
