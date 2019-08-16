@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- 导入d3.js文件 -->
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+</head>
+
+<body>
+    <div id="svg"></div>
+
+    <script>
+        // merge(update数据集)--->同时选中update和enter的数据集
+
+        //  虚拟一个数据
+        const dataset = [50, 43, 25, 60, 49, 120, 80]
+        //定义svg画布的宽高
+        const height = 400
+        const width = 400
+
+        //获取div元素--->创建svg标签--->定义属性--->画布创建完成
+        const svg = d3.select("#svg").append("svg").attr("height", height).attr("width", width)
+
+        //  定义内部数据柱体的间距
+        const padding = {
+            top: 20,
+            bottom: 20,
+            left: 20,
+            right: 20,
+        }
+        //定义内部数据的间隔
+        const rectStep = 35
+        //定义柱体的宽度
+        const rectWidth = 30
+
+        //定义一个渲染数据柱体的方法  参数(update部分|enter部分)
+        const rendRect = function (obj) {
+            obj.attr("fill", "red")
+                .attr("x", (d, i) =>
+                    padding.left + i * rectStep
+                )
+                .attr("y", (d, i) =>
+                    height - padding.bottom - d
+                )
+                .attr("width", rectWidth)
+                .attr("height", d => d)
+
+        }
+        //定义一个渲染数据文本的方法    参数(enter().append("rect"))
+        const rendText = function (obj) {
+            obj.attr("fill", "#fff")
+                .attr("font-size", "14px")
+                .attr("text-anchor", "middle")
+                .attr("x", (d, i) =>
+                    padding.left + i * rectStep
+                )
+                .attr("y", (d, i) =>
+                    height - padding.bottom - d
+                )
+                .text(d => d)
+                .attr("dx", rectWidth / 2)
+                .attr("dy", "1em")
+        }
+
+        // 先创建再更新数据
+        // 定义一个初始化的方法
+        const init = function (dataset) {
+            //enter新创建柱体数据
+            rendRect(svg.selectAll("rect").data(dataset).enter().append("rect"))
+            //enter新创建文本数据
+            rendText(svg.selectAll("text").data(dataset).enter().append("text"))
+        }
+        //定义一个更新的方法
+        const updated = function (dataset) {
+            //update更新柱体数据
+            rendRect(svg.selectAll("rect").data(dataset))
+            //update更新文本数据
+            rendText(svg.selectAll("text").data(dataset))
+        }
+        //定义一个删除的方法
+        const exit = function (dataset) {
+            //enter新创建柱体数据
+            rendRect(svg.selectAll("rect").data(dataset).exit().remove())
+            //enter新创建文本数据
+            rendText(svg.selectAll("text").data(dataset).exit().remove())
+        }
+
+
+        init(dataset)
+        // updated([50, 43, 25, 60, 49, 120, 110])
+        exit([50, 43, 25, 60, 49, 120])
+
+        // //enter新创建柱体数据
+        // rendRect(svg.selectAll("rect").data(dataset).enter().append("rect"))
+        // //update更新柱体数据
+        // rendRect(svg.selectAll("rect").data(dataset))
+
+        // //enter新创建文本数据
+        // rendText(svg.selectAll("text").data(dataset).enter().append("text"))
+        // //update更新文本数据
+        // rendText(svg.selectAll("text").data(dataset))
+    </script>
+
+
+</body>
+
+</html>

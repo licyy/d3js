@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+</head>
+
+<body>
+    <svg width="560" height="560"></svg>
+
+    <script>
+        // 定义假数据
+        var dataset = {
+            name: "石原里美",
+            children: [
+                {
+                    name: "同案",
+                    children: [{
+                        name: "古巨基"
+                    }, {
+                        name: "张根硕"
+                    }]
+                },
+                {name: "同住"},
+                {name: "同户"},
+                {name: "入所"},
+                {name: "同单位"},
+                {name: "同网吧"},
+                {name: "汽车"},
+                {name: "火车"},
+                {name: "航班"},
+            ]
+        }
+        var marge = {
+            top: 50,
+            bottom: 0,
+            left: 10,
+            right: 0
+        }
+        var svg = d3.select("svg")
+        var width = svg.attr("width")
+        var height = svg.attr("height")
+        //将需要可视化的数据图像放进一个g分组
+        var g = svg.append("g").attr("width", width).attr("height", height)
+        //预留比例尺g分组
+        var scale = svg.append("g").attr("transfrom", `translate(${marge.top},${marge.left})`)
+
+        //创建一个分层显示数据集
+        var hierarchyData = d3.hierarchy(dataset)
+
+        console.log(hierarchyData)// children--所有子节点
+
+        //创建一个树状图
+        var tree = d3.tree()
+            .size([500, 500])//定义树的大小
+            .separation(function (a, b) {      //设置两个兄弟节点之间的距离
+                return (a.parent == b.parent ? 1 : 2) / a.depth;
+            })
+        //将分层之后的数据绑定到树状图上
+        var treeData = tree(hierarchyData)
+        var nodes = treeData.descendants()  //选择集
+        var links = treeData.links()   //选择集
+        console.log(nodes)  //10个节点
+        console.log(links)  //9根线
+
+
+        //画线
+        g.append("g").selectAll("path").data(links).enter().append("path").attr("d", function (d) {
+            var start = {x: d.source.x + 30, y: d.source.y + 30};
+            var end = {x: d.target.x + 30, y: d.target.y + 30}
+            return `M ${start.y},${start.x} L ${end.y},${end.x}`
+        }).attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-width", 1);
+
+
+
+        // 先给每个节点创造分组
+        var gs = g.append("g").selectAll("g").data(nodes)//update
+            .enter()//enter
+            .append("g").attr("transform", d => `translate(${d.y + 30},${d.x + 30})`)
+
+            .append("circle").attr("r", 16).attr("fill", "white").attr("stroke", "blue").attr("stroke-width", 1)
+
+        //文字
+        gs.append("text")
+            .attr("x", function (d) {
+                return d.children ? -40 : 8;
+            })
+            .attr("y", -5)
+            .attr("dy", 10)
+            .attr("textLength", "20")
+            .text(function (d) {
+                return d.data.name;
+            });
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

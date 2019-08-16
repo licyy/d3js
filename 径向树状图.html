@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+    <style>
+        .container {
+            width: 800px;
+            height: 800px;
+
+            background-color: aquamarine;
+            position: relative;
+        }
+
+        svg {
+            position: absolute;
+            background-color: #fff;
+        }
+
+        .nodeBox {
+            background-color: pink;
+        }
+
+        .nodes circle{
+            fill:#fff;
+            stroke:aqua;
+            stroke-width: "2"
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+    </div>
+
+    <script>
+        //虚拟数据
+        var dataset = {
+            "name": "石原里美", children: [
+                {
+                    "name": "入所",
+                    children: [
+                        {"name": "一一元"},
+                        {"name": "一二元"}
+                    ]
+                },
+                {
+                    "name": "同户",
+                    children: [
+                        {"name": "一一元"},
+                        {"name": "一二元"}
+                    ]
+                },
+                {
+                    "name": "同住",
+                    children: [
+                        {"name": "一一元"},
+                        {"name": "一二元"}
+                    ]
+                },
+                {
+                    "name": "同案",
+                    children: [
+                        {"name": "一一元"},
+                        {"name": "一二元"}
+                    ]
+                },
+                {"name": "同单位"},
+                {"name": "同网吧"},
+                {"name": "火车"},
+                {"name": "航班"},
+                {"name": "汽车"}
+            ]
+        }
+        //定义画布高度
+        var width = 750;
+        var height = 750;
+        //定义树的半径
+        var radius = (width / 2)
+        //定义节点圆的半径
+        var r = 40
+        //线创建一个svg画布
+        var svg = d3.select(".container").append("svg").attr("width", width).attr("height", height).attr("transform", "translate(25,25)").attr("viewBox", [0, 0, 750, 750])
+
+        //使用hierarchy处理数据
+        var hiData = d3.hierarchy(dataset)
+        console.log(hiData)
+        //创建树状图
+        var tree = d3.tree()
+            .size([2 * Math.PI, radius])    //定义树的大小
+            .separation(function separation(a, b) {     //定义间距
+                return (a.parent == b.parent ? 1 : 2) / a.depth;
+            })
+
+        //初始化树状图，将hierarchy处理的数据绑定给tree
+        var treeData = tree(hiData)
+        //获取所有的节点
+        var nodes = treeData.descendants()
+        //获取所有的边
+        var links = treeData.links()
+
+        console.log(nodes);
+        console.log(links);
+
+        //创建装线的盒子，移动到中心位置
+        var lg = svg.append("g").attr("class", "linkBox").attr("transform", function (d) {return "translate(" + radius + "," + radius + ")"})
+        //创建线
+        var link = lg.selectAll("path.link").data(links).enter().append("path").attr("class", "links")
+            .attr("fill", "none").attr("stroke", "#555").attr("stroke-opacitr", 0.4).attr("stroke-width", 1.5)
+            //连线
+            // .attr("d", `M ${},0 L ${radius - 2 * r},0`)
+            .attr("d", function (d) {
+                var start = {x: d.source.x, y: d.source.y - r / 2};
+                var end = {x: d.target.x, y: d.target.y - 2 * r}
+                return `M ${start.y},${start.x} L ${end.y},${end.x}`
+            }).attr("transform", function (d) {return `rotate(${d.target.x * 180 / Math.PI - 90})`})
+
+
+        //先创建装节点的盒子，移动到中心位置   d.y是半径  d.x是角度
+        var ng = svg.append("g").attr("class", "nodeBox").attr("transform", function (d) {return "translate(" + radius + "," + radius + ")"})
+
+        //创建节点
+        var node = ng.selectAll("g.nodes").data(nodes).enter().append("g").attr("class", "nodes").attr("transform", function (d) {
+            return `rotate(${d.x * 180 / Math.PI - 90})translate(${d.y == 0 ? d.y : d.y - r},0)`
+        })
+        //给节点加圆圈
+        node.append("circle").attr("r", r)
+        // 给节点加文字 dy偏移
+        node.append("text").text(function (d) {
+            return d.data.name
+        })
+        .attr("dy", "0.31em")
+        .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+        .attr("text-anchor", d => d.x < Math.PI === !d.children ? "end" : "start")
+        .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+    </script>
+
+</body>
+
+</html>

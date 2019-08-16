@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Array as Data</title>
+    <link rel="stylesheet" type="text/css" href="./style.css"/>
+    <!-- 导入d3.js文件 -->
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+</head>
+
+<body>
+
+        <script type="text/javascript">
+            var data = [ // 初始数据数组中的元素是对象
+                {width: 10, color: 23},{width: 15, color: 33},
+                {width: 30, color: 40},{width: 50, color: 60},
+                {width: 80, color: 22},{width: 65, color: 10},
+                {width: 55, color: 5},{width: 30, color: 30},
+                {width: 20, color: 60},{width: 10, color: 90},
+                {width: 8, color: 10}
+            ];
+            //设置一个颜色比例尺
+            var colorScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range(["#add8e6", "blue"]);
+
+            // 渲染数据的方法
+            function render(data) {
+                var bars = d3.select("body").selectAll("div.h-bar")
+                        .data(data); // Update
+                // Enter
+                bars.enter()
+                        .append("div")
+                        .attr("class", "h-bar")
+                        .merge(bars) // Enter + Update
+                        // 在绑定数据的时候通过d.的方式获取到对象里面的数据
+                        .style("width", function (d) {
+                            return (d.width * 5) + "px"; })
+                        .style("background-color", function(d){
+                            return colorScale(d.color);
+                        })
+                        .text(function (d) {
+                            return d.width;
+                        })
+                // Exit
+                bars.exit().remove();
+            }
+            function randomValue() {
+                return Math.round(Math.random() * 100);
+            }
+            setInterval(function () {
+                data.shift();
+                data.push({width: randomValue(), color: randomValue()});
+                render(data);
+            }, 1500);
+            render(data);
+        </script>
+
+</body>
+
+</html>

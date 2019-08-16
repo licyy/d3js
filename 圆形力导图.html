@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+    <style>
+        .container {
+            width: 100%;
+            height: 700px;
+            background-color: antiquewhite;
+        }
+
+        svg {
+            background-color: aquamarine;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <svg width="1300" height="700"></svg>
+        <!-- viewBox="-300 -500 1000 1000" -->
+    </div>
+    <script>
+        var marge = {top: 60, bottom: 60, left: 60, right: 60}
+        var svg = d3.select("svg")
+        // .attr("transform", `translate(${marge.top},${marge.left})`)
+        var width = svg.attr("width")
+        var height = svg.attr("height")
+        var moveX = width / 4
+        var moveY = height / 4
+
+        //创建一个分组用来存放力导向图
+        var g = svg.append("g").attr("class", "box")
+            .attr("transform", `translate(${moveX},${moveY})`)
+            .call(d3.drag().on("start", started).on("drag", dragged)
+                .on("end", ended))
+        //虚拟数据
+        //节点
+        var nodes = [
+            {name: "石原里美", type: "a"},//0
+            {name: "同案", type: "b"}, //1
+            {name: "同住", type: "b"}, //2
+            {name: "同户", type: "b"}, //3
+            {name: "入所", type: "b"}, //4
+            {name: "同单位", type: "b"},//5
+            {name: "同网吧", type: "b"},//6
+            {name: "汽车", type: "b"},//7
+            {name: "火车", type: "b"},//8
+            {name: "航班", type: "b"},//9
+            {name: "高桥圣子", type: "c"},//10
+            {name: "新垣结衣", type: "c"},//11
+            {name: "长泽雅美", type: "c"},//12
+            {name: "黑岛结菜", type: "c"},//13
+            {name: "斋藤飞鸟", type: "c"},//14
+            {name: "桥本环奈", type: "c"},//15
+            {name: "广末凉子1", type: "c"},//16
+            {name: "广末凉子2", type: "d"},//17
+            {name: "广末凉子3", type: "d"},//18
+            {name: "广末凉子4", type: "d"},//19
+
+        ];
+        //边
+        var edges = [
+            {source: 0, target: 1, value: 1},
+            {source: 0, target: 2, value: 1},
+            {source: 0, target: 3, value: 1},
+            {source: 0, target: 4, value: 1},
+            {source: 0, target: 5, value: 1},
+            {source: 0, target: 6, value: 1},
+            {source: 0, target: 7, value: 1},
+            {source: 0, target: 8, value: 1},
+            {source: 0, target: 9, value: 1},
+            {source: 1, target: 10, value: 0.5},
+            {source: 1, target: 11, value: 0.5},
+            {source: 2, target: 12, value: 0.5},
+            {source: 2, target: 13, value: 0.5},
+            {source: 3, target: 14, value: 0.5},
+            {source: 3, target: 15, value: 0.5},
+            {source: 3, target: 16, value: 0.5},
+            {source: 16, target: 17, value: 0.5},
+            {source: 16, target: 18, value: 0.5},
+            {source: 16, target: 19, value: 0.5},
+
+        ];
+
+        //定义一个color的颜色比例尺，让节点显示不同的颜色
+        var colorScale = d3.scaleOrdinal()
+            .domain(d3.range(nodes.length))
+            .range(d3.schemeCategory10)
+
+        //创建力导向图d3.forceCollide().radius(55)
+        var forceSimulation = d3.forceSimulation()    //新建力导向图
+            .force("link", d3.forceLink())   //添加一个弹簧力模型，将两个关联的节点拉进或者推远
+            .force("charge", d3.forceCollide().radius(55)) //创建一个圆的碰撞检测，指定半径为10，并返回坐标
+            .force("r", d3.forceRadial(function (d) {
+                if (d.type == "a") {
+                    return 0
+                }
+                if (d.type == "b") {
+                    return 150
+                }
+                if (d.type == "c") {
+                    return 400
+                }
+                if (d.type == "d") {
+                    return 500
+                }
+            }))
+        // .force("center", d3.forceCenter())   //添加一个中心力，所有节点的中心向指定位置移动，可以辅助保持所有节点在视口中心
+
+        // .force("link",null) 移除一个力
+
+        //初始化力导图，传入数据
+        //生成节点数据--传入一个数组，将其转换成力导向图数据--添加了x(横坐标),y(纵坐标),vx(x方向速度),vy(y方向速度)，index(索引)
+        forceSimulation.nodes(nodes)
+            .on("tick", ticked)     //将节点与link绑定
+
+
+        // //生成边节点---边使用弹簧力控制
+        forceSimulation.force("link")
+            .links(edges)   //将数组转换成力导向图数据--生成了source对象和target对象--添加了x,y,vx,vy,index
+            .distance(d => d.value * 200)   //设置边的距离
+        // //设置圆心的中心位置---中心使用中心力控制--使节点向中心靠拢
+        // forceSimulation.force("center").x(width / 2).y(height / 2)
+
+        console.log(nodes);
+        console.log(edges);
+
+        // //开始绘制
+        // //绘制边
+        var links = g.append("g")
+            .selectAll("line")
+            .data(edges)
+            .enter()
+            .append("line")
+            .attr("stroke", (d, i) => colorScale(i))
+            .attr("stroke-width", 1)
+
+        // //绘制节点
+        // //将节点和节点中的文字统一分组
+        var gs = g.selectAll(".circleText").data(nodes)
+            .enter()
+            .append("g")
+            .attr("transform", (d, i) => {
+                var cirX = d.x
+                var cirY = d.y
+                return `translate(${cirX},${cirY})`
+            })
+            .call(d3.drag().on("start", started).on("drag", dragged)
+                .on("end", ended))
+
+        //绘制节点
+        gs.append("circle")
+            .attr("r", 30)
+            .attr("fill", (d, i) => colorScale(i))
+        //绘制文字
+        gs.append("text")
+            .attr("x", -10)
+            .attr("y", -10)
+            .attr("dy", 10)
+            .text(d => d.name)
+
+
+        function ticked() {
+            links
+                .attr("x1", function (d) {return d.source.x;})
+                .attr("y1", function (d) {return d.source.y;})
+                .attr("x2", function (d) {return d.target.x;})
+                .attr("y2", function (d) {return d.target.y;});
+
+
+
+            gs
+                .attr("transform", function (d) {return "translate(" + d.x + "," + d.y + ")";});
+        }
+        var startX = 0
+        var currentX = 0
+        var countX = 0
+        function started(d) {
+            if (!d3.event.active) {
+                forceSimulation.alphaTarget(1).restart();
+            }
+            d.fx = d.x;
+            d.fy = d.y;
+            startX = 0
+            currentX = 0
+            countX = 0
+             d3.select(".box").attr("transform", `translate(${moveX},${moveY})`)
+
+            startX = d3.event.sourceEvent.clientX
+            startY = d3.event.sourceEvent.clientY
+            console.log(moveX)
+            console.log(moveY);
+
+
+        }
+        function dragged(d) {
+            console.log(d3.event)
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+
+            currentX = d3.event.sourceEvent.clientX
+            countX = currentX - startX
+            moveX = width / 4 + countX
+
+
+            currentY = d3.event.sourceEvent.clientY
+            countY = currentY - startY
+            moveY = width / 4 + countY
+            d3.select(".box").attr("transform", `translate(${moveX},${moveY})`)
+            // console.log(currentX)
+        }
+        function ended(d) {
+            if (!d3.event.active) {
+                forceSimulation.alphaTarget(0.5);
+            }
+            d3.select(".box").attr("transform", `translate(${moveX},${moveY})`)
+            // console.log(countX)
+            d.fx = null;
+            d.fy = null;
+        }
+
+
+
+    </script>
+
+
+</body>
+
+</html>

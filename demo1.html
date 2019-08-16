@@ -1,0 +1,69 @@
+ <!DOCTYPE html>
+ <html lang="en">
+
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <title>Document</title>
+     <!-- 导入d3.js文件 -->
+     <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+ </head>
+
+ <body>
+     <div id="svg"></div>
+
+     <script>
+         //  虚拟一个数据
+         const dataset = [50, 43, 25, 60, 49, 120, 80]
+         //定义svg画布的宽高
+         const height = 400
+         const width = 400
+
+         //获取div元素--->创建svg标签--->定义属性--->画布创建完成
+         const svg = d3.select("#svg").append("svg").attr("height", height).attr("width", width)
+
+         //  定义内部数据柱体的间距
+         const padding = {
+             top: 20,
+             bottom: 20,
+             left: 20,
+             right: 20,
+         }
+         //定义内部数据的间隔
+         const rectStep = 35
+         //定义柱体的宽度
+         const rectWidth = 30
+         //  获取数据update数据集-->update指数据和dom相对应的部分,所以不用创建rect而是获取
+         const update = svg.selectAll("rect").data(dataset)
+         //获取数据enter()数据集-->enter指有数据没有dom的部分,所以要先创建rect
+         const enter = update.enter().append("rect").attr("fill", "red")
+         //设置enter部分主题样式
+         enter.attr("x", (d, i) => //柱体左上角横坐标
+                 padding.left + i * rectStep
+             )
+             .attr("y", (d, i) => //柱体左上角纵坐标
+                 height - padding.bottom - d
+             )
+             .attr("width", rectWidth) //柱体宽度
+             .attr("height", d => d) //柱体高度
+
+         //给柱体数据设置文字描述
+         const text = svg.selectAll("text").data(dataset).enter().append("text").attr("fill", "#fff")
+             .attr("font-size", "14px")
+             .attr("text-anchor", "middle") //svg中设置文本对齐start|middle|end
+             .attr("x", (d, i) =>
+                 padding.left + i * rectStep
+             )
+             .attr("y", (d, i) =>
+                 height - padding.bottom - d
+             )
+             .text(d => d)
+             .attr("dx", rectWidth / 2)
+             .attr("dy", "1em")
+     </script>
+
+
+ </body>
+
+ </html>

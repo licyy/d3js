@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Array as Data</title>
+    <link rel="stylesheet" type="text/css" href="./style.css"/>
+    <!-- 导入d3.js文件 -->
+    <script src="https://cdn.bootcss.com/d3/5.9.7/d3.js"></script>
+    <!-- 如果绑定的数据是一个函数,绑定的时候会直接调用它 -->
+</head>
+
+<body>
+        <div id="container"></div>
+
+        <script type="text/javascript">
+        // 定义一个空数组,用来接收数据
+            var data = [];
+            // 需要执行的方法
+            var datum = function (x) {
+                return 15 + x * x;
+            };
+            // 执行datum方法,将得到的结果放进数组
+            var newData = function () {
+                data.push(datum);
+                return data;
+            };
+
+            // render方法用来可视化渲染数据
+            function render(){
+                var divs = d3.select("#container")
+                            .selectAll("div")
+                            .data(newData); //将newdate函数绑定到div
+                    //这个例子不涉及数据的更新,而是一直新增,所以只在enter部分进行修改
+                divs.enter().append("div").append("span");
+
+                //div是数据可视化柱体
+                divs.attr("class", "v-bar")
+                    .style("height", function (d, i) {
+                        // d表示的是函数本身,将索引作为参数传给了newData函数
+                        // 每次调用i就会增加
+                        return d(i) + "px";
+                    })
+                    //span里面是数字文本
+                    .select("span")
+                        .text(function(d, i){
+                            return d(i);
+                        })
+
+                divs.exit().remove();
+            }
+
+            setInterval(function () {
+                render();
+            }, 1000);
+            render();
+        </script>
+
+        </body>
+
+</html>
